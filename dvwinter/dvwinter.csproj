@@ -10,12 +10,16 @@
 	<!-- Derail Valley -->
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp" />
+		<Reference Include="JBooth.MicroSplat.Core" />
 	</ItemGroup>
 
 	<!-- Unity -->
 	<ItemGroup>
 		<Reference Include="UnityEngine" />
 		<Reference Include="UnityEngine.CoreModule" />
+		<Reference Include="UnityEngine.InputLegacyModule" />
+		<Reference Include="UnityEngine.InputModule" />
+		<Reference Include="UnityEngine.AssetBundleModule" />
 	</ItemGroup>
 
 	<!-- Mod Loader -->

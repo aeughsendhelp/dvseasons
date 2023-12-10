@@ -8,13 +8,17 @@ using System.Diagnostics.CodeAnalysis;
 using DV.Scenarios;
 using System.Linq;
 using JBooth.MicroSplat;
+using UnityEngine.Assertions;
+using VRTK.Examples.Archery;
 
 namespace dvwinter;
 
 public static class Main {
 	[AllowNull] public static UnityModManager.ModEntry Instance { get; private set; }
 
-	private static Material mat;
+	[AllowNull] public static Texture2D[] textures = new Texture2D[1];
+		
+	[AllowNull] private static Texture2DArray texture2DArray;
 
 	private static bool Load(UnityModManager.ModEntry modEntry) {
 		Harmony ? harmony = null;
@@ -26,8 +30,8 @@ public static class Main {
 			harmony.PatchAll(Assembly.GetExecutingAssembly());
 
 			// Other plugin startup logic
-
 			StartLogic();
+
 			WorldStreamingInit.LoadingFinished += LoadAll;
 
 		} catch (Exception ex) {
@@ -40,49 +44,50 @@ public static class Main {
 	}
 
 	public static void StartLogic() {
-		AssetBundle microsplat = LoadAssetBundle("microsplat");
-		mat = LoadAssetFromBundle<Material>(microsplat, "Terrains/MicroSplatData/MicroSplat.mat");
+		AssetBundle testBundle = LoadAssetBundle("snowed");
+		textures[0] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/snow_02/snow_02_diff_2k.png");
+		Log(textures[0].name);
 	}
-
+	
 	public static void LoadAll() {
 		Log("It loaded (I think)");
 
-		var objs = GameObject.FindObjectsOfType<MicroSplatTerrain>();
+		var objs = GameObject.FindObjectsOfType<MicroSplatTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
 		for(int i = 0; i < objs.Length; i++) {
-			objs[i].templateMaterial = mat;
+			//Texture2DArray originalArray = objs[i].templateMaterial.GetTexture("_Diffuse");
+
+			Texture2DArray newArray = new Texture2DArray(textures[0].width, textures[0].height, textures.Length, textures[0].format, false);
+
+			for(int j = 0; j < textures.Length; j++) {
+				newArray.SetPixels(textures[j].GetPixels(), j);
+			}
+			newArray.Apply();
+			//objs[i].templateMaterial.SetTexture("_Diffuse", texture2DArray);
 		}
+		//MicroSplatObject.SyncAll();
 	}
-
+	
 	public static AssetBundle LoadAssetBundle(string assetBundle) {
-		string assetPath = Path.Combine(Instance.Path.ToString(), "assets");
+		try { // I don't think this try statement actually catches things lol, woops
+			string assPth = Path.Combine(Instance.Path.ToString(), "assets");
+			string assetPath = Path.Combine(assPth, assetBundle);
 
-		AssetBundle loadedBundle = AssetBundle.LoadFromFile(Path.Combine(assetPath, assetBundle));
-		return loadedBundle;
+			Log(assetPath);
+			return AssetBundle.LoadFromFile(assetPath);
+		} catch {
+			Error("Failed to load assetbundle \"" + assetBundle + "\"");
+			return default!;
+		}
 	}
 
 	public static T LoadAssetFromBundle<T>(AssetBundle assetBundle, string assetName) where T : UnityEngine.Object {
-		T loadedObject = assetBundle.LoadAsset<T>("Assets/" + assetName);
+		try {
 
-		if(loadedObject == null) {
-			Error("Failed to load " + assetName);
+			return assetBundle.LoadAsset<T>("Assets\\" + assetName);
+		} catch {
+			Error("Failed to load asset \"" + assetName + "\" from \"" + assetBundle.name + "\"");
 			return default!;
 		}
-
-		return loadedObject;
-	}
-
-	public static GameObject InstantiateLoadedObject(GameObject toLoad, Material mat, Transform toParent) {
-		GameObject obj = UnityEngine.Object.Instantiate(toLoad);
-
-		for(int i = 0; i < obj.transform.childCount; i++) {
-			obj.transform.GetChild(i).GetComponent<MeshRenderer>().material = mat;
-		}
-
-		//obj.transform.parent = toParent;
-		//obj.transform.localPosition = new Vector3(0, 0, objOffset);
-		//obj.transform.localRotation = Quaternion.identity;
-
-		return obj;
 	}
 
 	// Logger Commands

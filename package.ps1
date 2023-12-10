@@ -4,7 +4,8 @@ param (
 )
 
 Set-Location "$PSScriptRoot"
-$FilesToInclude = "build/*"
+$IncludedBuild = "build/*"
+$IncludedAssets = "assets/"
 
 $modInfo = Get-Content -Raw -Path "info.json" | ConvertFrom-Json
 $modId = $modInfo.Id
@@ -19,10 +20,10 @@ if ($NoArchive) {
 $ZipOutDir = "$ZipWorkDir/$modId"
 
 New-Item "$ZipOutDir" -ItemType Directory -Force
-Copy-Item -Force -Path $FilesToInclude -Destination "$ZipOutDir"
+Copy-Item -Force -Path $IncludedBuild -Destination "$ZipOutDir"
+Copy-Item -Force -Path $IncludedAssets -Destination "$ZipOutDir" -Recurse
 
-if (!$NoArchive)
-{
+if (!$NoArchive) {
     $FILE_NAME = "$DistDir/${modId}_v$modVersion.zip"
     Compress-Archive -Update -CompressionLevel Fastest -Path "$ZipOutDir/*" -DestinationPath "$FILE_NAME"
 }

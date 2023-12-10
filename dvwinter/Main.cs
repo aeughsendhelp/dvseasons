@@ -52,18 +52,35 @@ public static class Main {
 	public static void LoadAll() {
 		Log("It loaded (I think)");
 
-		var objs = GameObject.FindObjectsOfType<MicroSplatTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
-		for(int i = 0; i < objs.Length; i++) {
-			//Texture2DArray originalArray = objs[i].templateMaterial.GetTexture("_Diffuse");
 
-			Texture2DArray newArray = new Texture2DArray(textures[0].width, textures[0].height, textures.Length, textures[0].format, false);
+		Texture2DArray newArray = new Texture2DArray(textures[0].width, textures[0].height, textures.Length, textures[0].format, false);
+		newArray.filterMode = FilterMode.Bilinear;
+		newArray.wrapMode = TextureWrapMode.Repeat;
 
-			for(int j = 0; j < textures.Length; j++) {
-				newArray.SetPixels(textures[j].GetPixels(), j);
-			}
-			newArray.Apply();
-			//objs[i].templateMaterial.SetTexture("_Diffuse", texture2DArray);
-		}
+		Log("#1");
+		var pix = textures[0].GetPixels(0);
+		Log("#2");
+		newArray.SetPixels(pix, 0, 0);
+		Log("#3");
+
+		//for(int i = 0; i < textures.Length; i++) {
+		//	newArray.SetPixels(textures[i].GetPixels(0), i, 0);
+		//}
+
+		//var objs = GameObject.FindObjectsOfType<MicroSplatTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
+		//for(int i = 0; i < objs.Length; i++) {
+		//objs[i].templateMaterial.SetTexture("_Diffuse", texture2DArray);
+
+		//Texture2DArray originalArray = objs[i].templateMaterial.GetTexture("_Diffuse");
+
+
+		//for(int j = 0; j < textures.Length; j++) {
+		//	newArray.SetPixels(textures[j].GetPixels(), j);
+		//}
+
+
+		//newArray.Apply();
+		// }
 		//MicroSplatObject.SyncAll();
 	}
 	

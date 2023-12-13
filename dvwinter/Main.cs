@@ -31,6 +31,7 @@ public static class Main {
 
 			// Other plugin startup logic
 			StartLogic();
+			Instance.OnUpdate = OnUpdate;
 
 			WorldStreamingInit.LoadingFinished += LoadAll;
 
@@ -44,43 +45,50 @@ public static class Main {
 	}
 
 	public static void StartLogic() {
-		AssetBundle testBundle = LoadAssetBundle("snowed");
-		textures[0] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/snow_02/snow_02_diff_2k.png");
-		Log(textures[0].name);
+		AssetBundle testBundle = LoadAssetBundle("fabric_pattern_07_2k");
+
+		textures[0] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/fabric_pattern_07_2k/fabric_pattern_07_col_1_2k.png");
+
+		//Log("test1");
+		//textures[0] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/test/test1.png");
+		//Log("test2");
+		//textures[1] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/test/test2.png");
+		//Log("test3");
+		//textures[2] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/test/test3.png");
+		//Log("test4");
+		//textures[3] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/test/test4.png");
+	}
+
+	public static void OnUpdate(UnityModManager.ModEntry modEntry, float dt) {
+		if(Input.GetKeyDown(KeyCode.U)) {
+			LoadAll();
+		}	
 	}
 	
 	public static void LoadAll() {
 		Log("It loaded (I think)");
 
-
 		Texture2DArray newArray = new Texture2DArray(textures[0].width, textures[0].height, textures.Length, textures[0].format, false);
 		newArray.filterMode = FilterMode.Bilinear;
 		newArray.wrapMode = TextureWrapMode.Repeat;
 
-		Log("#1");
-		var pix = textures[0].GetPixels(0);
-		Log("#2");
-		newArray.SetPixels(pix, 0, 0);
-		Log("#3");
+		for(int i = 0; i < textures.Length; i++) {
+			Log(i.ToString());
+			newArray.SetPixels(textures[i].GetPixels(0), i, 0);
+			newArray.Apply();
+			Log(i.ToString());
+		}
 
-		//for(int i = 0; i < textures.Length; i++) {
-		//	newArray.SetPixels(textures[i].GetPixels(0), i, 0);
-		//}
+		var objs = GameObject.FindObjectsOfType<MicroSplatTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
 
-		//var objs = GameObject.FindObjectsOfType<MicroSplatTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
-		//for(int i = 0; i < objs.Length; i++) {
-		//objs[i].templateMaterial.SetTexture("_Diffuse", texture2DArray);
+		for(int i = 0; i < objs.Length; i++) {
+			objs[i].templateMaterial.SetTexture("_Diffuse", texture2DArray);
+			objs[i].templateMaterial.SetTexture("_ClusterDiffuse2", texture2DArray);
+			objs[i].templateMaterial.SetTexture("_ClusterDiffuse3", texture2DArray);
 
-		//Texture2DArray originalArray = objs[i].templateMaterial.GetTexture("_Diffuse");
+			//	Texture2DArray originalArray = objs[i].templateMaterial.GetTexture("_Diffuse");
+		}
 
-
-		//for(int j = 0; j < textures.Length; j++) {
-		//	newArray.SetPixels(textures[j].GetPixels(), j);
-		//}
-
-
-		//newArray.Apply();
-		// }
 		//MicroSplatObject.SyncAll();
 	}
 	
@@ -98,15 +106,14 @@ public static class Main {
 	}
 
 	public static T LoadAssetFromBundle<T>(AssetBundle assetBundle, string assetName) where T : UnityEngine.Object {
-		try {
-
+		try { // This try statement doesn't work here either
 			return assetBundle.LoadAsset<T>("Assets\\" + assetName);
 		} catch {
 			Error("Failed to load asset \"" + assetName + "\" from \"" + assetBundle.name + "\"");
 			return default!;
 		}
 	}
-
+	
 	// Logger Commands
 	public static void Log(string message) {
 		Instance.Logger.Log(message);

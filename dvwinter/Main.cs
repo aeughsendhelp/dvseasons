@@ -82,11 +82,20 @@ public static class Main {
 		var objs = GameObject.FindObjectsOfType<MicroSplatTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
 
 		for(int i = 0; i < objs.Length; i++) {
-			objs[i].templateMaterial.SetTexture("_Diffuse", texture2DArray);
-			objs[i].templateMaterial.SetTexture("_ClusterDiffuse2", texture2DArray);
-			objs[i].templateMaterial.SetTexture("_ClusterDiffuse3", texture2DArray);
+			Material mat = objs[i].templateMaterial;
+			mat.SetTexture("_Diffuse", texture2DArray);
+			mat.SetTexture("_ClusterDiffuse2", texture2DArray);
+			mat.SetTexture("_ClusterDiffuse3", texture2DArray);
 
-			//	Texture2DArray originalArray = objs[i].templateMaterial.GetTexture("_Diffuse");
+		        texture2DArray = mat.GetTexture("_Diffuse") as Texture2DArray;
+			// Texture2D textureArray[] = new Texture2D[]
+		 //        for (int i = 0; i < texture2DArray.depth; i++) {
+		 //            Color32[] pixels = texture2DArray.GetPixels32(i, 0);
+		 //            Texture2D texture = new Texture2D(texture2DArray.width, texture2DArray.height);
+		 //            texture.SetPixels32(pixels);
+		 //            texture.Apply();
+		 //            textureArray.Add(texture); //List of Texture2D
+		 //        }
 		}
 
 		//MicroSplatObject.SyncAll();

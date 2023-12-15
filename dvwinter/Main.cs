@@ -95,22 +95,23 @@ public static class Main {
 	}
 
 	public static AssetBundle LoadAssetBundle(string assetBundle) {
-		try { // I don't think this try statement actually catches things lol, woops
-			string assPth = Path.Combine(Instance.Path.ToString(), "assets");
-			string assetPath = Path.Combine(assPth, assetBundle);
+		string assPth = Path.Combine(Instance.Path.ToString(), "assets");
+		string assetPath = Path.Combine(assPth, assetBundle);
 
-			Log(assetPath);
-			return AssetBundle.LoadFromFile(assetPath);
-		} catch {
+		var bundle = AssetBundle.LoadFromFile(assetPath);
+		if(bundle != null {
+			return bundle;
+		} else {
 			Error("Failed to load assetbundle \"" + assetBundle + "\"");
 			return default!;
 		}
 	}
 
 	public static T LoadAssetFromBundle<T>(AssetBundle assetBundle, string assetName) where T : UnityEngine.Object {
-		try { // This try statement doesn't work here either
-			return assetBundle.LoadAsset<T>("Assets\\" + assetName);
-		} catch {
+		var asset = assetBundle.LoadAsset<T>("Assets\\" + assetName);
+		if(asset != null) {
+			return asset;
+		} else {
 			Error("Failed to load asset \"" + assetName + "\" from \"" + assetBundle.name + "\"");
 			return default!;
 		}

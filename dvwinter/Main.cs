@@ -16,7 +16,7 @@ namespace dvwinter;
 public static class Main {
 	[AllowNull] public static UnityModManager.ModEntry Instance { get; private set; }
 
-	[AllowNull] public static Texture2D[] textures = new Texture2D[1];
+	[AllowNull] public static Texture2D[] textures = new Texture2D[50];
 		
 	[AllowNull] private static Texture2DArray texture2DArray;
 
@@ -47,16 +47,15 @@ public static class Main {
 	public static void StartLogic() {
 		AssetBundle testBundle = LoadAssetBundle("fabric_pattern_07_2k");
 
-		textures[0] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/fabric_pattern_07_2k/fabric_pattern_07_col_1_2k.png");
+		//textures[0] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/fabric_pattern_07_2k/fabric_pattern_07_col_1_2k.png");
 
-		//Log("test1");
-		//textures[0] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/test/test1.png");
-		//Log("test2");
-		//textures[1] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/test/test2.png");
-		//Log("test3");
-		//textures[2] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/test/test3.png");
-		//Log("test4");
-		//textures[3] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/test/test4.png");
+		Log("test1");
+
+		Texture2D loadedTexture = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/fabric_pattern_07_2k/fabric_pattern_07_col_1_2k.png");
+		for(int i = 0; i < textures.Length; i++) {
+			Log(i + " | ");
+			textures[i] = loadedTexture;
+		}
 	}
 
 	public static void OnUpdate(UnityModManager.ModEntry modEntry, float dt) {
@@ -73,18 +72,25 @@ public static class Main {
 		newArray.wrapMode = TextureWrapMode.Repeat;
 
 		for(int i = 0; i < textures.Length; i++) {
-			Log(i.ToString());
-			newArray.SetPixels(textures[i].GetPixels(0), i, 0);
+			newArray.SetPixels(textures[i].GetPixels(4), i, 4);
 			newArray.Apply();
-			Log(i.ToString());
 		}
 
 		var objs = GameObject.FindObjectsOfType<MicroSplatTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
 
 		for(int i = 0; i < objs.Length; i++) {
+			// Near Textures
 			objs[i].templateMaterial.SetTexture("_Diffuse", texture2DArray);
+			objs[i].templateMaterial.SetTexture("_NormalSAO", texture2DArray);
 			objs[i].templateMaterial.SetTexture("_ClusterDiffuse2", texture2DArray);
+			objs[i].templateMaterial.SetTexture("_ClusterNormal2", texture2DArray);
 			objs[i].templateMaterial.SetTexture("_ClusterDiffuse3", texture2DArray);
+			objs[i].templateMaterial.SetTexture("_ClusterNormal3", texture2DArray);
+
+			// Distance Textures
+			objs[i].templateMaterial.SetTexture("_DistanceResampleHackDiff", texture2DArray);
+			objs[i].templateMaterial.SetTexture("_DistanceResampleHackNorm", texture2DArray);
+
 
 			//	Texture2DArray originalArray = objs[i].templateMaterial.GetTexture("_Diffuse");
 		}

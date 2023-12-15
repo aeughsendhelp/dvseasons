@@ -16,7 +16,7 @@ namespace dvwinter;
 public static class Main {
 	[AllowNull] public static UnityModManager.ModEntry Instance { get; private set; }
 
-	[AllowNull] public static Texture2D[] textures = new Texture2D[1];
+	[AllowNull] public static Texture2D[] textures = new Texture2D[16];
 		
 	[AllowNull] private static Texture2DArray texture2DArray;
 
@@ -47,16 +47,10 @@ public static class Main {
 	public static void StartLogic() {
 		AssetBundle testBundle = LoadAssetBundle("fabric_pattern_07_2k");
 
-		textures[0] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/fabric_pattern_07_2k/fabric_pattern_07_col_1_2k.png");
-
-		//Log("test1");
-		//textures[0] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/test/test1.png");
-		//Log("test2");
-		//textures[1] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/test/test2.png");
-		//Log("test3");
-		//textures[2] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/test/test3.png");
-		//Log("test4");
-		//textures[3] = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/test/test4.png");
+		Texture2D loadedTexture = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/fabric_pattern_07_2k/fabric_pattern_07_col_1_2k.png");
+		for(int i = 0; i < textures.Length; i++) {
+			textures[i] = loadedTexture;
+		}
 	}
 
 	public static void OnUpdate(UnityModManager.ModEntry modEntry, float dt) {
@@ -64,34 +58,42 @@ public static class Main {
 			LoadAll();
 		}	
 	}
-	
+
 	public static void LoadAll() {
 		Log("It loaded (I think)");
 
-		Texture2DArray newArray = new Texture2DArray(textures[0].width, textures[0].height, textures.Length, textures[0].format, false);
-		newArray.filterMode = FilterMode.Bilinear;
-		newArray.wrapMode = TextureWrapMode.Repeat;
+		texture2DArray = new Texture2DArray(textures[0].width, textures[0].height, textures.Length, textures[0].format, false);
+		texture2DArray.filterMode = FilterMode.Bilinear;
+		texture2DArray.wrapMode = TextureWrapMode.Repeat;
 
 		for(int i = 0; i < textures.Length; i++) {
-			Log(i.ToString());
-			newArray.SetPixels(textures[i].GetPixels(0), i, 0);
-			newArray.Apply();
-			Log(i.ToString());
+			texture2DArray.SetPixels(textures[i].GetPixels(4), i, 4);
+			texture2DArray.Apply();
 		}
 
 		var objs = GameObject.FindObjectsOfType<MicroSplatTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
 
 		for(int i = 0; i < objs.Length; i++) {
-			objs[i].templateMaterial.SetTexture("_Diffuse", texture2DArray);
-			objs[i].templateMaterial.SetTexture("_ClusterDiffuse2", texture2DArray);
-			objs[i].templateMaterial.SetTexture("_ClusterDiffuse3", texture2DArray);
+			// Near Textures
+			Material mat = objs[i].templateMaterial;
+			mat.SetTexture("_Diffuse", texture2DArray);
+			mat.SetTexture("_NormalSAO", texture2DArray);
+			mat.SetTexture("_ClusterDiffuse2", texture2DArray);
+			mat.SetTexture("_ClusterNormal2", texture2DArray);
+			mat.SetTexture("_ClusterDiffuse3", texture2DArray);
+			mat.SetTexture("_ClusterNormal3", texture2DArray);
 
-			//	Texture2DArray originalArray = objs[i].templateMaterial.GetTexture("_Diffuse");
+			// Distance Textures
+			mat.SetTexture("_DistanceResampleHackDiff", texture2DArray);
+			mat.SetTexture("_DistanceResampleHackNorm", texture2DArray);
+
+
+			Texture2DArray? originalArray = mat.GetTexture("_Diffuse") as Texture2DArray;
 		}
 
 		//MicroSplatObject.SyncAll();
 	}
-	
+
 	public static AssetBundle LoadAssetBundle(string assetBundle) {
 		try { // I don't think this try statement actually catches things lol, woops
 			string assPth = Path.Combine(Instance.Path.ToString(), "assets");

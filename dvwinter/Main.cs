@@ -15,10 +15,11 @@ namespace dvwinter;
 
 public static class Main {
 	[AllowNull] public static UnityModManager.ModEntry Instance { get; private set; }
-
-	[AllowNull] public static Texture2D[] textures = new Texture2D[16];
 		
 	[AllowNull] private static Texture2DArray texture2DArray;
+	[AllowNull] public static Texture2D[] textures = new Texture2D[16];
+
+	[AllowNull] static Texture2D loadedTexture;
 
 	private static bool Load(UnityModManager.ModEntry modEntry) {
 		Harmony ? harmony = null;
@@ -29,9 +30,9 @@ public static class Main {
 			harmony = new Harmony(modEntry.Info.Id);
 			harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-			// Other plugin startup logic
-			StartLogic();
 			Instance.OnUpdate = OnUpdate;
+
+			StartLogic();
 
 			WorldStreamingInit.LoadingFinished += LoadAll;
 
@@ -44,15 +45,17 @@ public static class Main {
 		return true;
 	}
 
-	public static void StartLogic() {
-		AssetBundle testBundle = LoadAssetBundle("fabric_pattern_07_2k");
 
-		Texture2D loadedTexture = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/fabric_pattern_07_2k/fabric_pattern_07_col_1_2k.png");
+	public static void StartLogic() {
+		AssetBundle testBundle = LoadAssetBundle("test");
+
+		loadedTexture = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/test/test.png");
+
 		for(int i = 0; i < textures.Length; i++) {
 			textures[i] = loadedTexture;
 		}
 	}
-
+	
 	public static void OnUpdate(UnityModManager.ModEntry modEntry, float dt) {
 		if(Input.GetKeyDown(KeyCode.U)) {
 			LoadAll();
@@ -60,46 +63,42 @@ public static class Main {
 	}
 
 	public static void LoadAll() {
-		Log("It loaded (I think)");
+		var objs = GameObject.FindObjectsOfType<MicroSplatTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
+		Material mat = objs[0].templateMaterial;
 
-		texture2DArray = new Texture2DArray(textures[0].width, textures[0].height, textures.Length, textures[0].format, false);
-		texture2DArray.filterMode = FilterMode.Bilinear;
-		texture2DArray.wrapMode = TextureWrapMode.Repeat;
+		Texture2DArray? originalArray = mat.GetTexture("_Diffuse") as Texture2DArray;
+
+		texture2DArray = new Texture2DArray(textures[0].width, textures[0].height, textures.Length, TextureFormat.RGBA32, false); //originalArray!.format
+		//texture2DArray.filterMode = originalArray.filterMode;
+		//texture2DArray.wrapMode = originalArray.wrapMode;
 
 		for(int i = 0; i < textures.Length; i++) {
-			texture2DArray.SetPixels(textures[i].GetPixels(4), i, 4);
-			texture2DArray.Apply();
+			texture2DArray.SetPixels(textures[i].GetPixels(0), i, 0);
 		}
+		texture2DArray.Apply();
 
-		var objs = GameObject.FindObjectsOfType<MicroSplatTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
+		// Near Textures
+		mat.SetTexture("_Diffuse", texture2DArray);
+		//mat.SetTexture("_NormalSAO", texture2DArray);
+		//mat.SetTexture("_ClusterDiffuse2", texture2DArray);
+		//mat.SetTexture("_ClusterNormal2", texture2DArray);
+		mat.SetTexture("_ClusterDiffuse3", texture2DArray);
+		//mat.SetTexture("_ClusterNormal3", texture2DArray);
 
-		for(int i = 0; i < objs.Length; i++) {
-			// Near Textures
-			Material mat = objs[i].templateMaterial;
-			mat.SetTexture("_Diffuse", texture2DArray);
-			mat.SetTexture("_NormalSAO", texture2DArray);
-			mat.SetTexture("_ClusterDiffuse2", texture2DArray);
-			mat.SetTexture("_ClusterNormal2", texture2DArray);
-			mat.SetTexture("_ClusterDiffuse3", texture2DArray);
-			mat.SetTexture("_ClusterNormal3", texture2DArray);
-
-			// Distance Textures
-			mat.SetTexture("_DistanceResampleHackDiff", texture2DArray);
-			mat.SetTexture("_DistanceResampleHackNorm", texture2DArray);
-
-
-			Texture2DArray? originalArray = mat.GetTexture("_Diffuse") as Texture2DArray;
-		}
-
-		//MicroSplatObject.SyncAll();
+		// Distance Textures
+		mat.SetTexture("_DistanceResampleHackDiff", texture2DArray);
+		//mat.SetTexture("_DistanceResampleHackNorm", texture2DArray);
 	}
+
+
+
 
 	public static AssetBundle LoadAssetBundle(string assetBundle) {
 		string assPth = Path.Combine(Instance.Path.ToString(), "assets");
 		string assetPath = Path.Combine(assPth, assetBundle);
 
 		var bundle = AssetBundle.LoadFromFile(assetPath);
-		if(bundle != null {
+		if(bundle != null) {
 			return bundle;
 		} else {
 			Error("Failed to load assetbundle \"" + assetBundle + "\"");

@@ -17,7 +17,7 @@ public static class Main {
 	[AllowNull] public static UnityModManager.ModEntry Instance { get; private set; }
 		
 	[AllowNull] private static Texture2DArray texture2DArray;
-	[AllowNull] public static Texture2D[] textures = new Texture2D[16];
+	//[AllowNull] public static Texture2D[] textures = new Texture2D[16];
 
 	[AllowNull] static Texture2D loadedTexture;
 
@@ -47,13 +47,9 @@ public static class Main {
 
 
 	public static void StartLogic() {
-		AssetBundle testBundle = LoadAssetBundle("test");
+		AssetBundle testBundle = LoadAssetBundle("arrayasset");
 
-		loadedTexture = LoadAssetFromBundle<Texture2D>(testBundle, "Textures/test/test.png");
-
-		for(int i = 0; i < textures.Length; i++) {
-			textures[i] = loadedTexture;
-		}
+		texture2DArray = LoadAssetFromBundle<Texture2DArray>(testBundle, "arrayAsset.asset");
 	}
 	
 	public static void OnUpdate(UnityModManager.ModEntry modEntry, float dt) {
@@ -65,17 +61,6 @@ public static class Main {
 	public static void LoadAll() {
 		var objs = GameObject.FindObjectsOfType<MicroSplatTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
 		Material mat = objs[0].templateMaterial;
-
-		Texture2DArray? originalArray = mat.GetTexture("_Diffuse") as Texture2DArray;
-
-		texture2DArray = new Texture2DArray(textures[0].width, textures[0].height, textures.Length, TextureFormat.RGBA32, false); //originalArray!.format
-		//texture2DArray.filterMode = originalArray.filterMode;
-		//texture2DArray.wrapMode = originalArray.wrapMode;
-
-		for(int i = 0; i < textures.Length; i++) {
-			texture2DArray.SetPixels(textures[i].GetPixels(0), i, 0);
-		}
-		texture2DArray.Apply();
 
 		// Near Textures
 		mat.SetTexture("_Diffuse", texture2DArray);

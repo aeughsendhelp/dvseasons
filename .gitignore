@@ -26,6 +26,13 @@ Directory.Build.targets
 # Mono auto generated files
 mono_crash.*
 
+# Unity
+*.asset
+*.manifest
+DVWinterAssets/Temp
+DVWinterAssets/ProjectSettings
+DVWinterAssets/*.csproj
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
@@ -398,3 +405,4 @@ FodyWeavers.xsd
 
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
+/DVWinterAssets/Assets/AssetBundles/AssetBundles.manifest

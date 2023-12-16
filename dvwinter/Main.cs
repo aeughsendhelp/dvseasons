@@ -17,8 +17,9 @@ namespace dvwinter;
 public static class Main {
 	[AllowNull] public static UnityModManager.ModEntry Instance { get; private set; }
 		
-	[AllowNull] private static Texture2DArray texture2DArray;
-	//[AllowNull] public static Texture2D[] textures = new Texture2D[16];
+	[AllowNull] private static Texture2DArray closeTextureArray;
+	[AllowNull] private static Texture2DArray distanceTextureArray;
+	[AllowNull] private static Texture2DArray farTextureArray;
 
 	[AllowNull] static Texture2D loadedTexture;
 

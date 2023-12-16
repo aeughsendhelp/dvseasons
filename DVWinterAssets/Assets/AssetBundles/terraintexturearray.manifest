@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1554660692
+CRC: 3310525282
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 69eee1a5278d5fe24f87913a5067f8f1
+    Hash: 14aa7d560e4bb715f8cd606a31eac706
   TypeTreeHash:
     serializedVersion: 2
     Hash: d78115f22298c35feb2cbfdb933c2b5c
@@ -13,5 +13,7 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
-- Assets/arrayAsset.asset
+- Assets/distanceArray.asset
+- Assets/closeArray.asset
+- Assets/farArray.asset
 Dependencies: []

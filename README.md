@@ -15,7 +15,4 @@ fuck you i dont wanna write this all out right now so just will the build into e
 
 ## License
 
-Source code is distributed under the MIT license.
-See [LICENSE][license-url] for more information.
-
-[license-url]: https://github.com/derail-valley-modding/template-umm/blob/main/LICENSE
+Distributed under the <a href="https://github.com/aeughsendhelp/dvwinter/blob/main/LICENSE">MIT license</a>, do whatever the hell you want

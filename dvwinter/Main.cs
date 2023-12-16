@@ -10,6 +10,7 @@ using System.Linq;
 using JBooth.MicroSplat;
 using UnityEngine.Assertions;
 using VRTK.Examples.Archery;
+using DV.WorldTools;
 
 namespace dvwinter;
 
@@ -47,7 +48,7 @@ public static class Main {
 
 
 	public static void StartLogic() {
-		AssetBundle testBundle = LoadAssetBundle("arrayasset");
+		AssetBundle testBundle = LoadAssetBundle("terraintexturearray");
 
 		texture2DArray = LoadAssetFromBundle<Texture2DArray>(testBundle, "arrayAsset.asset");
 	}
@@ -65,7 +66,7 @@ public static class Main {
 		// Near Textures
 		mat.SetTexture("_Diffuse", texture2DArray);
 		//mat.SetTexture("_NormalSAO", texture2DArray);
-		//mat.SetTexture("_ClusterDiffuse2", texture2DArray);
+		mat.SetTexture("_ClusterDiffuse2", texture2DArray);
 		//mat.SetTexture("_ClusterNormal2", texture2DArray);
 		mat.SetTexture("_ClusterDiffuse3", texture2DArray);
 		//mat.SetTexture("_ClusterNormal3", texture2DArray);
@@ -73,9 +74,25 @@ public static class Main {
 		// Distance Textures
 		mat.SetTexture("_DistanceResampleHackDiff", texture2DArray);
 		//mat.SetTexture("_DistanceResampleHackNorm", texture2DArray);
+		GameObject distTer = GameObject.Find("DistantTerrain_w3");
+
+		// Even farther textures
+		MeshRenderer[] componentsInChildren = distTer.GetComponentsInChildren<MeshRenderer>(includeInactive: true);
+		foreach(MeshRenderer meshRenderer in componentsInChildren) {
+			meshRenderer.sharedMaterial.SetTexture("_Splats", texture2DArray);
+			//meshRenderer.sharedMaterial.SetTexture("_SplatNormals", texture2DArray);
+
+			Log(meshRenderer.sharedMaterial.name);
+		}
 	}
 
+	private static bool IsTerrainMesh(MeshRenderer mr) {
+		if((bool) mr.sharedMaterial) {
+			return mr.sharedMaterial.HasProperty("_WorldNormalmap");
+		}
 
+		return false;
+	}
 
 
 	public static AssetBundle LoadAssetBundle(string assetBundle) {

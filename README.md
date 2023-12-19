@@ -6,7 +6,7 @@
 
 <h1>how tf does this work</h1>
 <p>
-	dv uses microsplat, and i hate microsplat, except not entirely anymore. its actually a pretty neat system, albeit really painful to mod. This mod just loads a new texture 2d array and then applies it to the terrain material.
+	dv uses a microsplat shader which allows it to have cool blending and anti-tiling effects. this mod replaces the original texture2darrays with new ones loaded from assetbundles. i havent done it yet but im gonna have to patch the trees to make them snowy and remove the decidious trees's leaves
 </p>
 
 <!-- BUILDING -->

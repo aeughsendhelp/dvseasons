@@ -17,8 +17,9 @@ namespace dvwinter;
 public static class Main {
 	[AllowNull] public static UnityModManager.ModEntry Instance { get; private set; }
 		
-	[AllowNull] private static Texture2DArray closeTextureArray;
-	[AllowNull] private static Texture2DArray distanceTextureArray;
+	[AllowNull] private static Texture2DArray closeArray;
+	[AllowNull] private static Texture2DArray closeArrayNorm;
+	[AllowNull] private static Texture2DArray distanceArray;
 	//[AllowNull] private static Texture2DArray farTextureArray;
 
 	[AllowNull] static Texture2D loadedTexture;
@@ -47,13 +48,21 @@ public static class Main {
 		return true;
 	}
 
-
 	public static void StartLogic() {
-		AssetBundle testBundle = LoadAssetBundle("terraintexturearray"); // needs to be changed to plural
+		AssetBundle arraysBundle = LoadAssetBundle("terraintexturearray"); // needs to be changed to plural
 
-		closeTextureArray = LoadAssetFromBundle<Texture2DArray>(testBundle, "closeArray.asset");
-		distanceTextureArray = LoadAssetFromBundle<Texture2DArray>(testBundle, "distanceArray.asset");
-		//farTextureArray = LoadAssetFromBundle<Texture2DArray>(testBundle, "farArray.asset");
+		closeArray = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "closeArray.asset");
+		closeArrayNorm = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "closeArrayNorm.asset");
+
+		//cluster1Array = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "cluster1Array.asset");
+		//cluster1ArrayNorm = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "cluster1ArrayNorm.asset");
+
+		//cluster2Array = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "cluster2Array.asset");
+		//cluster2ArrayNorm = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "cluster2ArrayNorm.asset");
+
+		distanceArray = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "distanceArray.asset");
+		closeArrayNorm = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "closeArrayNorm.asset");
+
 	}
 
 	public static void OnUpdate(UnityModManager.ModEntry modEntry, float dt) {
@@ -67,27 +76,23 @@ public static class Main {
 		Material mat = objs[0].templateMaterial;
 
 		// Near Textures
-		mat.SetTexture("_Diffuse", closeTextureArray);
-		//mat.SetTexture("_NormalSAO", texture2DArray);
-		mat.SetTexture("_ClusterDiffuse2", closeTextureArray);
+		mat.SetTexture("_Diffuse", closeArray);
+		//mat.SetTexture("_NormalSAO", closeArrayNorm);
+		mat.SetTexture("_ClusterDiffuse2", closeArray);
 		//mat.SetTexture("_ClusterNormal2", texture2DArray);
-		mat.SetTexture("_ClusterDiffuse3", closeTextureArray);
+		mat.SetTexture("_ClusterDiffuse3", closeArray);
 		//mat.SetTexture("_ClusterNormal3", texture2DArray);
 
 		// Distance Textures
-		mat.SetTexture("_DistanceResampleHackDiff", distanceTextureArray);
+		mat.SetTexture("_DistanceResampleHackDiff", distanceArray);
 		//mat.SetTexture("_DistanceResampleHackNorm", texture2DArray);
 
 		// Far textures
-		GameObject distTer = GameObject.Find("DistantTerrain_w3");
+		GameObject distanceTerrrain = GameObject.Find("DistantTerrain_w3");
 
-		MeshRenderer[] componentsInChildren = distTer.GetComponentsInChildren<MeshRenderer>(includeInactive: true);
-		foreach(MeshRenderer meshRenderer in componentsInChildren) {
-			meshRenderer.sharedMaterial.SetTexture("_Splats", distanceTextureArray);
-			//meshRenderer.sharedMaterial.SetTexture("_SplatNormals", texture2DArray);
-
-			Log(meshRenderer.sharedMaterial.name);
-		}
+		MeshRenderer[] componentsInChildren = distanceTerrrain.GetComponentsInChildren<MeshRenderer>(true); // idk why includeinactive is true here
+		componentsInChildren[0].sharedMaterial.SetTexture("_Splats", distanceArray);
+		//meshRenderer.sharedMaterial.SetTexture("_SplatNormals", distanceArrayNorm);
 	}
 
 	private static bool IsTerrainMesh(MeshRenderer mr) {

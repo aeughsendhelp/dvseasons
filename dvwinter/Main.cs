@@ -19,7 +19,7 @@ public static class Main {
 		
 	[AllowNull] private static Texture2DArray closeTextureArray;
 	[AllowNull] private static Texture2DArray distanceTextureArray;
-	[AllowNull] private static Texture2DArray farTextureArray;
+	//[AllowNull] private static Texture2DArray farTextureArray;
 
 	[AllowNull] static Texture2D loadedTexture;
 
@@ -49,11 +49,13 @@ public static class Main {
 
 
 	public static void StartLogic() {
-		AssetBundle testBundle = LoadAssetBundle("terraintexturearray");
+		AssetBundle testBundle = LoadAssetBundle("terraintexturearray"); // needs to be changed to plural
 
-		texture2DArray = LoadAssetFromBundle<Texture2DArray>(testBundle, "arrayAsset.asset");
+		closeTextureArray = LoadAssetFromBundle<Texture2DArray>(testBundle, "closeArray.asset");
+		distanceTextureArray = LoadAssetFromBundle<Texture2DArray>(testBundle, "distanceArray.asset");
+		//farTextureArray = LoadAssetFromBundle<Texture2DArray>(testBundle, "farArray.asset");
 	}
-	
+
 	public static void OnUpdate(UnityModManager.ModEntry modEntry, float dt) {
 		if(Input.GetKeyDown(KeyCode.U)) {
 			LoadAll();
@@ -65,22 +67,23 @@ public static class Main {
 		Material mat = objs[0].templateMaterial;
 
 		// Near Textures
-		mat.SetTexture("_Diffuse", texture2DArray);
+		mat.SetTexture("_Diffuse", closeTextureArray);
 		//mat.SetTexture("_NormalSAO", texture2DArray);
-		mat.SetTexture("_ClusterDiffuse2", texture2DArray);
+		mat.SetTexture("_ClusterDiffuse2", closeTextureArray);
 		//mat.SetTexture("_ClusterNormal2", texture2DArray);
-		mat.SetTexture("_ClusterDiffuse3", texture2DArray);
+		mat.SetTexture("_ClusterDiffuse3", closeTextureArray);
 		//mat.SetTexture("_ClusterNormal3", texture2DArray);
 
 		// Distance Textures
-		mat.SetTexture("_DistanceResampleHackDiff", texture2DArray);
+		mat.SetTexture("_DistanceResampleHackDiff", distanceTextureArray);
 		//mat.SetTexture("_DistanceResampleHackNorm", texture2DArray);
+
+		// Far textures
 		GameObject distTer = GameObject.Find("DistantTerrain_w3");
 
-		// Even farther textures
 		MeshRenderer[] componentsInChildren = distTer.GetComponentsInChildren<MeshRenderer>(includeInactive: true);
 		foreach(MeshRenderer meshRenderer in componentsInChildren) {
-			meshRenderer.sharedMaterial.SetTexture("_Splats", texture2DArray);
+			meshRenderer.sharedMaterial.SetTexture("_Splats", distanceTextureArray);
 			//meshRenderer.sharedMaterial.SetTexture("_SplatNormals", texture2DArray);
 
 			Log(meshRenderer.sharedMaterial.name);

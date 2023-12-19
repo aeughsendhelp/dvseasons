@@ -32,6 +32,7 @@ mono_crash.*
 DVWinterAssets/Temp
 DVWinterAssets/ProjectSettings
 DVWinterAssets/*.csproj
+DVWinterAssets/
 
 # Build results
 [Dd]ebug/

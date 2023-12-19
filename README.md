@@ -4,6 +4,10 @@
 	it's winter time and so heres a winter mod
 </p>
 
+<h1>how tf does this work</h1>
+<p>
+	dv uses microsplat, and i hate microsplat, except not entirely anymore. its actually a pretty neat system, albeit really painful to mod. This mod just loads a new texture 2d array and then applies it to the terrain material.
+</p>
 
 <!-- BUILDING -->
 ## Building

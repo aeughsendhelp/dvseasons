@@ -11,6 +11,7 @@ using JBooth.MicroSplat;
 using UnityEngine.Assertions;
 using VRTK.Examples.Archery;
 using DV.WorldTools;
+using System.Collections.Generic;
 
 namespace dvwinter;
 
@@ -52,7 +53,7 @@ public static class Main {
 		AssetBundle arraysBundle = LoadAssetBundle("terraintexturearray"); // needs to be changed to plural
 
 		closeArray = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "closeArray.asset");
-		closeArrayNorm = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "closeArrayNorm.asset");
+		//closeArrayNorm = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "closeArrayNorm.asset");
 
 		//cluster1Array = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "cluster1Array.asset");
 		//cluster1ArrayNorm = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "cluster1ArrayNorm.asset");
@@ -62,12 +63,23 @@ public static class Main {
 
 		distanceArray = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "distanceArray.asset");
 		closeArrayNorm = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "closeArrayNorm.asset");
-
 	}
 
 	public static void OnUpdate(UnityModManager.ModEntry modEntry, float dt) {
 		if(Input.GetKeyDown(KeyCode.U)) {
-			LoadAll();
+			var objs = GameObject.FindObjectsOfType<MicroSplatTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
+
+			List<GameObject> treePrefabs = new List<GameObject>();
+
+			for(int i = 1; i < objs.Length; i++) {
+				var safsd = objs[i].GetComponent<Terrain>().terrainData.treePrototypes.Length;
+
+				//Log(safsd.ToString());
+
+				for(int j = 0; j < safsd; j++) {
+					Log(objs[i].GetComponent<Terrain>().terrainData.treePrototypes[j].prefab.name);
+				}
+			}
 		}	
 	}
 
@@ -78,10 +90,11 @@ public static class Main {
 		// Near Textures
 		mat.SetTexture("_Diffuse", closeArray);
 		//mat.SetTexture("_NormalSAO", closeArrayNorm);
+
 		mat.SetTexture("_ClusterDiffuse2", closeArray);
-		//mat.SetTexture("_ClusterNormal2", texture2DArray);
+		//mat.SetTexture("_ClusterNormal2", closeArrayNorm);
 		mat.SetTexture("_ClusterDiffuse3", closeArray);
-		//mat.SetTexture("_ClusterNormal3", texture2DArray);
+		//mat.SetTexture("_ClusterNormal3", closeArrayNorm);
 
 		// Distance Textures
 		mat.SetTexture("_DistanceResampleHackDiff", distanceArray);

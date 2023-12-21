@@ -14,10 +14,14 @@ internal class Update {
 		if(Input.GetKeyDown(KeyCode.U)) {
 			var obj = GameObject.FindObjectOfType<VegetationSystemPro>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
 
-			var silly = obj.VegetationCellSpawner.VegetationPackageProModelsList[0].VegetationItemModelList;
+			var modelList = obj.VegetationCellSpawner.VegetationPackageProModelsList[0].VegetationItemModelList;
 
-			foreach(var pro in silly) {
-				Main.Log(pro.VegetationModel.name);
+			//modelList[0].VegetationModel
+
+			foreach(var thing in modelList) {
+				//Main.Log(thing.VegetationModel.name);
+
+				thing.VegetationModel = null;
 			}
 		}
 	}

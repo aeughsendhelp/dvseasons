@@ -32,7 +32,7 @@ public static class Main {
 			harmony = new Harmony(modEntry.Info.Id);
 			harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-			Instance.OnUpdate = OnUpdate;
+			Instance.OnUpdate = Update.OnUpdate;
 
 			StartLogic();
 
@@ -60,24 +60,6 @@ public static class Main {
 
 		distanceArray = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "distanceArray.asset");
 		closeArrayNorm = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "closeArrayNorm.asset");
-	}
-
-	public static void OnUpdate(UnityModManager.ModEntry modEntry, float dt) {
-		if(Input.GetKeyDown(KeyCode.U)) {
-			var objs = GameObject.FindObjectsOfType<UnityTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
-
-			List<GameObject> treePrefabs = new List<GameObject>();
-
-			for(int i = 1; i < objs.Length; i++) {
-				objs[i].GetComponent<Terrain>().drawTreesAndFoliage = false;
-
-				Log(objs[i].gameObject.name);
-
-				//for(int j = 0; j < safsd; j++) {
-				//	Log(objs[i].GetComponent<Terrain>().terrainData.treePrototypes[j].prefab.name);
-				//}
-			}
-		}	
 	}
 
 	public static AssetBundle LoadAssetBundle(string assetBundle) {

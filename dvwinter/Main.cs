@@ -5,22 +5,20 @@ using HarmonyLib;
 using UnityModManagerNet;
 using UnityEngine;
 using System.Diagnostics.CodeAnalysis;
-using DV.Scenarios;
 using System.Linq;
 using JBooth.MicroSplat;
 using UnityEngine.Assertions;
-using VRTK.Examples.Archery;
 using DV.WorldTools;
 using System.Collections.Generic;
-
+using AwesomeTechnologies.VegetationSystem;
 namespace dvwinter;
 
 public static class Main {
 	[AllowNull] public static UnityModManager.ModEntry Instance { get; private set; }
 		
-	[AllowNull] private static Texture2DArray closeArray;
-	[AllowNull] private static Texture2DArray closeArrayNorm;
-	[AllowNull] private static Texture2DArray distanceArray;
+	[AllowNull] public static Texture2DArray closeArray;
+	[AllowNull] public static Texture2DArray closeArrayNorm;
+	[AllowNull] public static Texture2DArray distanceArray;
 	//[AllowNull] private static Texture2DArray farTextureArray;
 
 	[AllowNull] static Texture2D loadedTexture;
@@ -38,7 +36,7 @@ public static class Main {
 
 			StartLogic();
 
-			WorldStreamingInit.LoadingFinished += LoadAll;
+			WorldStreamingInit.LoadingFinished += WorldLoad.LoadAll;
 
 		} catch (Exception ex) {
 			modEntry.Logger.LogException($"Failed to load {modEntry.Info.DisplayName}:", ex);
@@ -57,7 +55,6 @@ public static class Main {
 
 		//cluster1Array = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "cluster1Array.asset");
 		//cluster1ArrayNorm = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "cluster1ArrayNorm.asset");
-
 		//cluster2Array = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "cluster2Array.asset");
 		//cluster2ArrayNorm = LoadAssetFromBundle<Texture2DArray>(arraysBundle, "cluster2ArrayNorm.asset");
 
@@ -67,55 +64,21 @@ public static class Main {
 
 	public static void OnUpdate(UnityModManager.ModEntry modEntry, float dt) {
 		if(Input.GetKeyDown(KeyCode.U)) {
-			var objs = GameObject.FindObjectsOfType<MicroSplatTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
+			var objs = GameObject.FindObjectsOfType<UnityTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
 
 			List<GameObject> treePrefabs = new List<GameObject>();
 
 			for(int i = 1; i < objs.Length; i++) {
-				var safsd = objs[i].GetComponent<Terrain>().terrainData.treePrototypes.Length;
+				objs[i].GetComponent<Terrain>().drawTreesAndFoliage = false;
 
-				//Log(safsd.ToString());
+				Log(objs[i].gameObject.name);
 
-				for(int j = 0; j < safsd; j++) {
-					Log(objs[i].GetComponent<Terrain>().terrainData.treePrototypes[j].prefab.name);
-				}
+				//for(int j = 0; j < safsd; j++) {
+				//	Log(objs[i].GetComponent<Terrain>().terrainData.treePrototypes[j].prefab.name);
+				//}
 			}
 		}	
 	}
-
-	public static void LoadAll() {
-		var objs = GameObject.FindObjectsOfType<MicroSplatTerrain>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
-		Material mat = objs[0].templateMaterial;
-
-		// Near Textures
-		mat.SetTexture("_Diffuse", closeArray);
-		//mat.SetTexture("_NormalSAO", closeArrayNorm);
-
-		mat.SetTexture("_ClusterDiffuse2", closeArray);
-		//mat.SetTexture("_ClusterNormal2", closeArrayNorm);
-		mat.SetTexture("_ClusterDiffuse3", closeArray);
-		//mat.SetTexture("_ClusterNormal3", closeArrayNorm);
-
-		// Distance Textures
-		mat.SetTexture("_DistanceResampleHackDiff", distanceArray);
-		//mat.SetTexture("_DistanceResampleHackNorm", texture2DArray);
-
-		// Far textures
-		GameObject distanceTerrrain = GameObject.Find("DistantTerrain_w3");
-
-		MeshRenderer[] componentsInChildren = distanceTerrrain.GetComponentsInChildren<MeshRenderer>(true); // idk why includeinactive is true here
-		componentsInChildren[0].sharedMaterial.SetTexture("_Splats", distanceArray);
-		//meshRenderer.sharedMaterial.SetTexture("_SplatNormals", distanceArrayNorm);
-	}
-
-	private static bool IsTerrainMesh(MeshRenderer mr) {
-		if((bool) mr.sharedMaterial) {
-			return mr.sharedMaterial.HasProperty("_WorldNormalmap");
-		}
-
-		return false;
-	}
-
 
 	public static AssetBundle LoadAssetBundle(string assetBundle) {
 		string assPth = Path.Combine(Instance.Path.ToString(), "assets");

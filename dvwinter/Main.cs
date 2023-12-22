@@ -5,12 +5,7 @@ using HarmonyLib;
 using UnityModManagerNet;
 using UnityEngine;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using JBooth.MicroSplat;
-using UnityEngine.Assertions;
-using DV.WorldTools;
-using System.Collections.Generic;
-using AwesomeTechnologies.VegetationSystem;
+
 namespace dvwinter;
 
 public static class Main {

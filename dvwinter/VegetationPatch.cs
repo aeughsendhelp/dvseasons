@@ -10,9 +10,9 @@ using UnityEngine;
 
 namespace dvwinter;
 
-[HarmonyPatch(typeof(VegetationSystemPro), "SpawnVegetationCell", new Type[] {typeof(VegetationCell)} )]
+[HarmonyPatch(typeof(VegetationCellSpawner), "SpawnVegetationCell", new[] { typeof(VegetationCell), typeof(string), typeof(bool), typeof(bool) } )]
 class VegetationPatch {
-	static void Prefix(ref VegetationSystemPro __instance) {
+	static void Prefix(ref VegetationCellSpawner __instance) {
 		Main.Log("This is one of the top 10 gamer moments of all time");
 
 		VegetationSystemPro vegetationManager = GameObject.FindObjectOfType<VegetationSystemPro>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs

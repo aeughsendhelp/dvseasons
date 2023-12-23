@@ -39,7 +39,6 @@
 		<Reference Include="Assembly-CSharp" />
 		<Reference Include="CommandTerminal" />
 		<Reference Include="DV.BrakeSystem" />
-		<Reference Include="DV.CharacterController" />
 		<Reference Include="DV.Common" />
 		<Reference Include="DV.ControllerAnchors" />
 		<Reference Include="DV.Highlighting" />
@@ -76,6 +75,9 @@
 		<Reference Include="UnityEngine.InputModule" />
 		<Reference Include="UnityEngine.AssetBundleModule" />
 		<Reference Include="UnityEngine.TerrainModule" />
+		<Reference Include="Unity.Collections" />
+		<Reference Include="Unity.Mathematics" />
+
 	</ItemGroup>
 
 	<!-- Mod Loader -->

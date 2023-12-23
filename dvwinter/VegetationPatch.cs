@@ -1,46 +1,60 @@
+using AwesomeTechnologies.Vegetation;
+using AwesomeTechnologies;
 using AwesomeTechnologies.VegetationSystem;
 using HarmonyLib;
+using Unity.Jobs;
+using UnityEngine;
+using AwesomeTechnologies.Vegetation.Masks;
+using AwesomeTechnologies.Vegetation.PersistentStorage;
+using Unity.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using UnityEngine;
+using System.Reflection.Emit;
+using PlaceholderSoftware.WetStuff.Debugging;
+using static SteamVR_TrackedObject;
 
 namespace dvwinter;
 
-[HarmonyPatch(typeof(VegetationCellSpawner), "SpawnVegetationCell", new[] { typeof(VegetationCell), typeof(string), typeof(bool), typeof(bool) } )]
-class VegetationPatch {
+//[HarmonyPatch(typeof(VegetationCellSpawner), "ExecuteSpawnRules", new[] { typeof(VegetationCell), typeof(Rect), typeof(int), typeof(int) })]
+//class VegetationTranspilerPatch {
+//	static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+//		var codes = new List<CodeInstruction>(instructions);
+
+//		codes[16].opcode = OpCodes.Nop;
+//		codes[17].opcode = OpCodes.Nop;
+//		codes[18].opcode = OpCodes.Nop;
+//		codes[19].opcode = OpCodes.Nop;
+//		codes[20].opcode = OpCodes.Nop;
+//		codes[21].opcode = OpCodes.Nop;
+//		codes[22].opcode = OpCodes.Nop;
+//		codes[23].opcode = OpCodes.Nop;
+
+//		return codes.AsEnumerable();
+//	}
+//}
+
+
+[HarmonyPatch(typeof(VegetationCellSpawner), "ExecuteSpawnRules")]
+class VegetationPrefixPatch {
 	static void Prefix(ref VegetationCellSpawner __instance) {
-		Main.Log("This is one of the top 10 gamer moments of all time");
+		Main.Log("_instance is one of the top 10 gamer moments of all time");
 
-		VegetationSystemPro vegetationManager = GameObject.FindObjectOfType<VegetationSystemPro>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
-		Main.Log(vegetationManager.gameObject.name);
+		//VegetationSystemPro vegetationManager = GameObject.FindObjectOfType<VegetationSystemPro>(); // name can be simplified but it's actually longer so looks less simple so fuck off vs
 
-		var modelList = vegetationManager.VegetationCellSpawner.VegetationPackageProModelsList;
+		var modelList = __instance.VegetationPackageProModelsList;
 
 		foreach(var item in modelList) {
 			var newList = item.VegetationItemModelList;
 
 			foreach(var thing in newList) {
 				Main.Log(thing.VegetationModel.name);
-				thing.VegetationModel = new GameObject();
-				Main.Log(thing.VegetationModel.name);
+
+				// Vegetation editing will go right here
 			}
 		}
-
-		//modelList[0].VegetationModel
 	}
-
-	//static MethodBase TargetMethod() {
-	//	return AccessTools.Method(
-	//		typeof(VegetationSystemPro),
-	//			"SpawnVegetationCell",
-	//		new Type[] {
-	//			typeof(float),
-	//			typeof(int).MakeByRefType(), // note: this is not constant expression
-	//		}
-	//	);
-	//}
 }

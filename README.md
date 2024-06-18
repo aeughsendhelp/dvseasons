@@ -1,7 +1,7 @@
 <!-- TITLE -->
-<h1>Derail Valley Winter</h1>
+<h1>Derail Valley Seasons</h1>
 <p>
-	it's winter time and so heres a winter mod
+	was originally just winter but someone wanted autumn so here we go
 </p>
 
 <h1>how tf does this work</h1>
